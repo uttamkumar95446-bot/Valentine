@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Day</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffc0cb 0%, #ff69b4 100%);
+            color: #fff;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Canvas for fireworks */
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            display: none;
+        }
+
+        /* Petals container */
+        .container-petals {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .petal {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff1493;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Page container */
+        .page {
+            display: none;
+            text-align: center;
+            z-index: 10;
+            padding: 20px;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        #page1 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-family: 'Roboto', sans-serif;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            color: #555;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .couple-pic {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            margin: 0 auto 20px;
+            display: block;
+        }
+
+        /* Button container */
+        .btn-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            position: relative;
+            min-height: 100px;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        button {
+            width: 150px;
+            height: 60px;
+            border-radius: 30px;
+            border: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+        }
+
+        #btnYes {
+            background: #ff0000;
+            color: white;
+            position: relative;
+        }
+
+        #btnNo {
+            background: #0055ff;
+            color: white;
+            position: absolute;
+            transition: all 0.3s ease;
+        }
+
+        /* Gift images */
+        #selected-pics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .selection-pics {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .selection-pics:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        .btn-single {
+            width: 200px;
+            margin: 20px auto;
+            display: block;
+            background: #ff0000;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Petals container -->
+    <div class="container-petals" id="petalsContainer"></div>
+
+    <!-- Canvas for fireworks -->
+    <canvas id="canvas"></canvas>
+
+    <!-- PAGE 1: First Proposal -->
+    <div id="page1" class="page">
+        <div class="container">
+            <img src="https://usagif.com/wp-content/uploads/gify/bear-1-usagif.gif" class="couple-pic" alt="Cute bear">
+            <h1>Will you be mine 😳?</h1>
+            <p>Life is an incredible journey, and I want to spend every single second of it with you.</p>
+            <div class="btn-container">
+                <button id="btnYes" onclick="nextPage('page2')">YES</button>
+                <button id="btnNo" onmouseover="moveBtn()">NO</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 2: Confirmation -->
+    <div id="page2" class="page">
+        <div class="container">
+            <img src="https://usagif.com/wp-content/uploads/gify/bear-1-usagif.gif" class="couple-pic" alt="Cute bear">
+            <h1>Are You sure 😳?</h1>
+            <p>Life is an incredible journey, and I want to spend every single second of it with you.</p>
+            <div class="btn-container">
+                <button id="btnYes2" onclick="openHappyPageOrNot()">YES</button>
+                <button id="btnNo2" onmouseover="moveBtn2()">NO</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 3: Happy Valentine -->
+    <div id="page3" class="page">
+        <div class="container">
+            <img src="https://usagif.com/wp-content/uploads/gify/17-bear-2-2.gif" class="couple-pic" alt="Happy bears">
+            <h1>Happy Valentine Day Baby! 💗</h1>
+            <p>Every second with you is a celebration. You are the spark that makes my world so much brighter!</p>
+            <button class="btn-single" onclick="triggerTrailTransition()">SEE MY GIFTS ➤</button>
+        </div>
+    </div>
+
+    <!-- PAGE 4: Gifts -->
+    <div id="page4" class="page">
+        <div class="container">
+            <h1>Sending u our cute pics ♥</h1>
+            <div id="selected-pics">
+                <!-- ⭐ CUSTOMIZE YOUR IMAGES HERE ⭐ -->
+                <!-- Option 1: Use online image URLs (like imgur, imgbb, etc.) -->
+                <!-- Option 2: Place images in same folder as this HTML file and use: src="your-image.jpg" -->
+                <!-- Option 3: Keep these cute GIFs or replace with your own -->
+                
+                <!-- Image 1 - Replace src with your image URL or filename -->
+                <img class="selection-pics" src="https://usagif.com/wp-content/uploads/gify/bear-kissing.gif" alt="Your photo 1">
+                
+                <!-- Image 2 - Replace src with your image URL or filename -->
+                <img class="selection-pics" src="https://i.pinimg.com/originals/90/4f/74/904f74e03de18d6e7bad4070dcbb3486.gif" alt="Your photo 2">
+                
+                <!-- 💡 Want more images? Copy this line and paste below: -->
+                <!-- <img class="selection-pics" src="YOUR_IMAGE_URL_HERE" alt="Your photo 3"> -->
+                
+                <!-- Example with local file (if image is in same folder): -->
+                <!-- <img class="selection-pics" src="our-photo1.jpg" alt="Our photo"> -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create falling petals
+        function createPetals() {
+            const container = document.getElementById('petalsContainer');
+            for (let i = 0; i < 50; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                petal.style.left = Math.random() * 100 + '%';
+                petal.style.width = (Math.random() * 10 + 5) + 'px';
+                petal.style.height = petal.style.width;
+                petal.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                petal.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(petal);
+            }
+        }
+
+        createPetals();
+
+        // Move NO button on page 1
+        function moveBtn() {
+            const btnNo = document.getElementById('btnNo');
+            const container = btnNo.parentElement;
+            const containerRect = container.getBoundingClientRect();
+            
+            const maxX = containerRect.width - btnNo.offsetWidth - 20;
+            const maxY = containerRect.height - btnNo.offsetHeight - 20;
+            
+            const randomX = Math.random() * maxX - maxX / 2;
+            const randomY = (Math.random() * maxY - maxY / 2);
+            
+            btnNo.style.left = randomX + 'px';
+            btnNo.style.top = randomY + 'px';
+        }
+
+        // Move NO button on page 2
+        function moveBtn2() {
+            const btnNo = document.getElementById('btnNo2');
+            const container = btnNo.parentElement;
+            const containerRect = container.getBoundingClientRect();
+            
+            const maxX = containerRect.width - btnNo.offsetWidth - 20;
+            const maxY = containerRect.height - btnNo.offsetHeight - 20;
+            
+            const randomX = Math.random() * maxX - maxX / 2;
+            const randomY = (Math.random() * maxY - maxY / 2);
+            
+            btnNo.style.left = randomX + 'px';
+            btnNo.style.top = randomY + 'px';
+        }
+
+        // Navigate to next page
+        function nextPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById(pageId).style.display = 'flex';
+        }
+
+        // Open happy page with fireworks
+        function openHappyPageOrNot() {
+            nextPage('page3');
+            animateFirecracker();
+        }
+
+        // Trigger transition to gifts page
+        function triggerTrailTransition() {
+            setTimeout(() => {
+                nextPage('page4');
+            }, 300);
+        }
+
+        // Fireworks animation
+        function animateFirecracker() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            canvas.style.display = 'block';
+
+            let particles = [];
+
+            class Particle {
+                constructor(x, y, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.color = color;
+                    this.velocityX = (Math.random() - 0.5) * 8;
+                    this.velocityY = (Math.random() - 0.5) * 8;
+                    this.size = Math.random() * 3 + 2;
+                    this.life = 100;
+                }
+
+                draw() {
+                    ctx.globalAlpha = this.life / 100;
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                update() {
+                    this.x += this.velocityX;
+                    this.y += this.velocityY;
+                    this.velocityY += 0.1;
+                    this.life -= 2;
+                }
+            }
+
+            function createFirework(x, y) {
+                const colors = ['#ff0844', '#ffb199', '#ffe347', '#00ff00', '#00ffff', '#ff00ff'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                for (let i = 0; i < 50; i++) {
+                    particles.push(new Particle(x, y, color));
+                }
+            }
+
+            function animate() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                particles = particles.filter(particle => particle.life > 0);
+
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+
+                if (Math.random() < 0.05) {
+                    createFirework(
+                        Math.random() * canvas.width,
+                        Math.random() * canvas.height * 0.6
+                    );
+                }
+
+                if (particles.length > 0) {
+                    requestAnimationFrame(animate);
+                } else {
+                    setTimeout(() => {
+                        canvas.style.display = 'none';
+                    }, 1000);
+                }
+            }
+
+            // Create initial fireworks
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    createFirework(
+                        Math.random() * canvas.width,
+                        Math.random() * canvas.height * 0.5
+                    );
+                }, i * 300);
+            }
+
+            animate();
+        }
+
+        // Resize canvas on window resize
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('canvas');
+            if (canvas.style.display !== 'none') {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+        });
+    </script>
+</body>
+</html>
